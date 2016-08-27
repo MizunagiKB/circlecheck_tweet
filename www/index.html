@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+    <head>
+
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="description" content="Circle Checker / TweetViwer" />
+        <meta name="author" content="MizunagiKB" />
+
+        <title>CircleCheck TAGs:Tweet</title>
+
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css" />
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap-theme.min.css" />
+        <!-- Bootstrap DatePicker -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/css/bootstrap-datepicker3.min.css" />
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+        <style>
+            body {
+                font-family:Avenir , "Open Sans" , "Helvetica Neue" , Helvetica , Arial , Verdana , Roboto , "游ゴシック" , "Yu Gothic" , "游ゴシック体" , "YuGothic" , "ヒラギノ角ゴ Pro W3" , "Hiragino Kaku Gothic Pro" , "Meiryo UI" , "メイリオ" , Meiryo , "ＭＳ Ｐゴシック" , "MS PGothic" , sans-serif;
+                padding-top: 60px;
+            }
+            #id_tpl_foot {
+                height: 60px;
+            }
+
+            .affix {
+                position: fixed;
+                top: 60px;
+            }
+        </style>
+
+    </head>
+
+    <body>
+
+        <nav id="id_tpl_head" class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#nav-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="index.html">CircleCheck TAGs:Tweet</a>
+                </div>
+                <div id="nav-collapse" class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li id="id_menu_tweet" data-target-view="#id_view_tweet" class="disabled"><a href="javascript:void(0);"><span class="glyphicon glyphicon-list"></span>&nbsp;ツイート</a></li>
+                        <li id="id_menu_htags" data-target-view="#id_view_htags" class="disabled"><a href="index.html"><span class="glyphicon glyphicon-tag"></span>&nbsp;ハッシュタグ&nbsp;<span id="id_head_fav_count" class="badge"></span></a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <script type="text/template" id="id_tpl_tweet">
+            <tr>
+                <td><img src="{{profile_image_url}}" width="48" /></td>
+                <td>
+                    <a id="id_user_{{id}}" class="show_tbl_usr" href="https://twitter.com/{{screen_name}}" data-user-id="{{id}}" target="_blank">@{{screen_name}}</a> - {{name}}<br />
+                    <small>
+                        <table class="table">
+                            <tbody>
+                                {{#tweet_list}}
+                                <tr {{#new_tweet}}class="info"{{/new_tweet}}>
+                                    <td>
+                                        <p class="text-left">{{{text}}}</p>
+                                        <p class="text-right">
+                                            {{#hashtags}}
+                                            <a href="index.html?hashtag={{text}}"><span class="label label-primary">{{text}}</span></a>
+                                            {{/hashtags}}
+                                        </p>
+                                        <p class="text-right">
+                                            <span class="glyphicon glyphicon-time"></span>&nbsp;{{current_datetime}}
+                                        </p>
+                                        <p class="text-right">
+                                            {{#with_attachments}}<span class="glyphicon glyphicon-paperclip"></span>&nbsp;{{/with_attachments}}
+                                            {{^possibly_sensitive}}
+                                            <button id="id_btn_tweet_{{id_str}}" class="btn btn-default btn-xs show_tweet" data-screen-name="{{screen_name}}" data-tweet-id="{{id_str}}" href="https://twitter.com/{{screen_name}}/status/{{id_str}}"><span class="glyphicon glyphicon-info-sign"></span>&nbsp;ツイートの表示</button>
+                                            {{/possibly_sensitive}}
+                                            {{#possibly_sensitive}}
+                                            <button id="id_btn_tweet_{{id_str}}" class="btn btn-danger btn-xs show_tweet" data-screen-name="{{screen_name}}" data-tweet-id="{{id_str}}" href="https://twitter.com/{{screen_name}}/status/{{id_str}}"><span class="glyphicon glyphicon-exclamation-sign"></span>&nbsp;ツイートの表示</button>
+                                            {{/possibly_sensitive}}
+                                        </p>
+                                    </td>
+                                </tr>
+                                {{/tweet_list}}
+                                {{#more_tweet_count}}
+                                <tr class="active">
+                                    <td>
+                                        <p class="text-center">
+                                            <a role="button" data-toggle="collapse" href="#collapseExample_{{id}}" aria-expanded="false" aria-controls="collapseExample_{{id}}">
+                                                残りの{{more_tweet_count}}件を表示
+                                            </a>
+                                        </p>
+                                        <div class="collapse" id="collapseExample_{{id}}">
+                                            <table class="table">
+                                                {{#tweet_list_more}}
+                                                <tr {{#new_tweet}}class="info"{{/new_tweet}}>
+                                                    <td>
+                                                        <p class="text-left">{{{text}}}</p>
+                                                        <p class="text-right">
+                                                            {{#hashtags}}
+                                                            <a href="index.html?hashtag={{text}}"><span class="label label-primary">{{text}}</span></a>
+                                                            {{/hashtags}}
+                                                        </p>
+                                                        <p class="text-right">
+                                                            <span class="glyphicon glyphicon-time"></span>&nbsp;{{current_datetime}}
+                                                        </p>
+                                                        <p class="text-right">
+                                                            {{#with_attachments}}<span class="glyphicon glyphicon-paperclip"></span>&nbsp;{{/with_attachments}}
+                                                            {{^possibly_sensitive}}
+                                                            <button id="id_btn_tweet_{{id_str}}" class="btn btn-default btn-xs show_tweet" data-screen-name="{{screen_name}}" data-tweet-id="{{id_str}}" href="https://twitter.com/{{screen_name}}/status/{{id_str}}"><span class="glyphicon glyphicon-info-sign"></span>&nbsp;ツイートの表示</button>
+                                                            {{/possibly_sensitive}}
+                                                            {{#possibly_sensitive}}
+                                                            <button id="id_btn_tweet_{{id_str}}" class="btn btn-danger btn-xs show_tweet" data-screen-name="{{screen_name}}" data-tweet-id="{{id_str}}" href="https://twitter.com/{{screen_name}}/status/{{id_str}}"><span class="glyphicon glyphicon-exclamation-sign"></span>&nbsp;ツイートの表示</button>
+                                                            {{/possibly_sensitive}}
+                                                        </p>
+                                                    </td>
+                                                </tr>
+                                                {{/tweet_list_more}}
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {{/more_tweet_count}}
+                            </tbody>
+                        </table>
+                    </small>
+                </td>
+            </tr>
+        </script>
+
+        <script type="text/template" id="id_tpl_htags">
+            <li><a href="index.html?hashtag={{tag_encode}}">{{tag}}({{value}})</a></li>
+        </script>
+
+        <div class="container">
+
+            <div id="id_notify_area">
+                <div class="alert alert-info alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <strong><span class="glyphicon glyphicon-info-sign"></span></strong>&nbsp;キャッシュされた情報から最新250件のみを表示しています。<br />
+                    <small>（キャッシュされたデータはツイート日から一週間経過後に順次消えていきます）</small>
+                </div>
+            </div>
+
+            <h5 id="id_current_hashtag"></h5>
+
+            <div id="id_view_tweet" class="cchack_view" style="display: none;">
+                <div class="row">
+                    <div class="col-xs-6 col-md-8">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a href="#id_tab_tweet_0" data-toggle="tab"><span class="glyphicon glyphicon-list"></span>&nbsp;ツイート</a></li>
+                            <!-- <li><a href="#id_tab_tweet_1" data-toggle="tab">@</a></li> -->
+                        </ul>
+                        <div class="tab-content">
+                            <p>
+                                <div class="tab-pane fade in active" id="id_tab_tweet_0">
+                                    <table class="table table-condensed">
+                                        <thead>
+                                            <tr>
+                                                <th><span class="glyphicon glyphicon-user"></span></th>
+                                                <th><span class="glyphicon glyphicon-comment"></span></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="id_tbl_tweet_tag">
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- <div class="tab-pane fade in" id="id_tab_tweet_1">
+                                    <table class="table table-striped table-condensed table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th><span class="glyphicon glyphicon-user"></span></th>
+                                                <th><span class="glyphicon glyphicon-comment"></span></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="id_tbl_tweet_usr">
+                                        </tbody>
+                                    </table>
+                                </div> -->
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-xs-6 col-md-4">
+                        <div data-spy="affix" data-offset-top="120">
+                            <div id="tweet-screen">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="id_view_htags" class="cchack_view" style="display: none;">
+                <p>
+                    <div class="tab-pane fade in active" id="id_tab_htags_0">
+                        <ul id="id_tbl_htags" class="nav nav-pills">
+                        </ul>
+                    </div>
+                </p>
+            </div>
+        </div>
+
+        <div id="id_tpl_foot">
+            <div class="container">
+                <p class="text-right">Programming and Design&nbsp;<a href="https://twitter.com/MizunagiKB">@MizunagiKB</a></p>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+            window.onload = function()
+            {
+                ccheck_tweet.main();
+            }
+        </script>
+
+        <!-- jQuery http://jquery.com/ -->
+        <script type="text/javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.0/jquery.js"></script>
+
+        <!-- Bootstrap http://twitter.github.io/bootstrap/ -->
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+        <!-- Underscore.js http://jashkenas.github.io/underscore/ -->
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+
+        <!-- Backbone.js http://backbonejs.org/ -->
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.2.3/backbone-min.js"></script>
+
+        <!-- Hogan.js http://twitter.github.io/hogan.js/ -->
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/hogan.js/3.0.2/hogan.min.js"></script>
+
+        <!-- circlecheck.js -->
+        <script type="text/javascript" src="src/ccheck_tweet_model.js"></script>
+        <script type="text/javascript" src="src/ccheck_tweet_couch.js"></script>
+        <script type="text/javascript" src="src/ccheck_tweet.js"></script>
+
+    </body>
+</html>

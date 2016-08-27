@@ -1,0 +1,4 @@
+
+*.pyc
+
+cron.d/configure.py

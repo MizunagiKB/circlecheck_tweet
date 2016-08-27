@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "outDir": "./www/src",
+        "sourceMap": true
+    },
+    "filesGlob": [
+        "./**/*.ts",
+        "!./node_modules/**/*.ts"
+    ],
+    "files": [
+        "./ccheck_tweet_couch.ts",
+        "./ccheck_tweet_model.ts",
+        "./ccheck_tweet.ts"
+    ],
+    "atom": {
+        "rewriteTsconfig": true
+    }
+}
