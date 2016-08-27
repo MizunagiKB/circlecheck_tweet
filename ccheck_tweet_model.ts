@@ -76,7 +76,7 @@ module ccheck_tweet {
 
         //
         render() {
-            let tpl = Hogan.compile($("#id_tpl_htags").html());
+            let tplHTags = Hogan.compile($("#id_tpl_htags").html());
             let listRenderSource: Array<string> = [];
             let listData: Array<any> = [];
 
@@ -94,7 +94,7 @@ module ccheck_tweet {
                 const r: any = listData[n];
 
                 listRenderSource.push(
-                    tpl.render({ tag: r.key[0], tag_encode: encodeURI(r.key[0]), value: r.value })
+                    tplHTags.render({ tag: r.key[0], tag_encode: encodeURI(r.key[0]), value: r.value })
                 );
             }
 

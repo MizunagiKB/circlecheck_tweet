@@ -142,6 +142,12 @@
             </tr>
         </script>
 
+        <script type="text/template" id="id_tpl_pills">
+            <li role="presentation" {{#limit_250}}class="active"{{/limit_250}}><a href="index.html?hashtag={{tag_encode}}&limit=250">最新250件</a></li>
+            <li role="presentation" {{#limit_500}}class="active"{{/limit_500}}><a href="index.html?hashtag={{tag_encode}}&limit=500">最新500件</a></li>
+            <li role="presentation" {{#limit_750}}class="active"{{/limit_750}}><a href="index.html?hashtag={{tag_encode}}&limit=750">最新750件</a></li>
+        </script>
+
         <script type="text/template" id="id_tpl_htags">
             <li><a href="index.html?hashtag={{tag_encode}}">{{tag}}({{value}})</a></li>
         </script>
@@ -151,12 +157,12 @@
             <div id="id_notify_area">
                 <div class="alert alert-info alert-dismissible" role="alert">
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <strong><span class="glyphicon glyphicon-info-sign"></span></strong>&nbsp;キャッシュされた情報から最新250件のみを表示しています。<br />
+                    <strong><span class="glyphicon glyphicon-info-sign"></span></strong>&nbsp;キャッシュされた情報から最新<span id="id_limit_count">250</span>件を表示しています。<br />
                     <small>（キャッシュされたデータはツイート日から一週間経過後に順次消えていきます）</small>
                 </div>
             </div>
 
-            <h5 id="id_current_hashtag"></h5>
+            <h5 id="id_current_hashtag">#</h5>
 
             <div id="id_view_tweet" class="cchack_view" style="display: none;">
                 <div class="row">
@@ -166,6 +172,15 @@
                             <!-- <li><a href="#id_tab_tweet_1" data-toggle="tab">@</a></li> -->
                         </ul>
                         <div class="tab-content">
+                            <p>
+                                <small>
+                                    <div>
+                                        <ul id="id_limit_pills" class="nav nav-pills nav-justified">
+                                        </ul>
+                                    </div>
+                                </small>
+                            </p>
+
                             <p>
                                 <div class="tab-pane fade in active" id="id_tab_tweet_0">
                                     <table class="table table-condensed">
@@ -198,6 +213,7 @@
                         <div data-spy="affix" data-offset-top="120">
                             <div id="tweet-screen">
                             </div>
+                            <p><a href="#top">Back to top</a></p>
                         </div>
                     </div>
                 </div>

@@ -97,6 +97,20 @@ module ccheck_tweet {
                     }
                 );
 
+                $("#id_limit_count").html(String(nLimit));
+
+                let tplPills = Hogan.compile($("#id_tpl_pills").html());
+                $("#id_limit_pills").html(
+                    tplPills.render(
+                        {
+                            tag_encode: strHashTag,
+                            limit_250: (nLimit == 250) ? true : false,
+                            limit_500: (nLimit == 500) ? true : false,
+                            limit_750: (nLimit == 750) ? true : false
+                        }
+                    )
+                );
+
                 $("#id_view_tweet").show();
                 $("#id_menu_tweet").removeClass("disabled");
                 $("#id_menu_htags").removeClass("disabled");

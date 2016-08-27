@@ -46,7 +46,7 @@ var ccheck_tweet;
             return {};
         };
         view_CHTags.prototype.render = function () {
-            var tpl = Hogan.compile($("#id_tpl_htags").html());
+            var tplHTags = Hogan.compile($("#id_tpl_htags").html());
             var listRenderSource = [];
             var listData = [];
             for (var n = 0; n < this.model.attributes.rows.length; n++) {
@@ -58,7 +58,7 @@ var ccheck_tweet;
             listData.sort(compare_hashtag_count);
             for (var n = 0; n < listData.length; n++) {
                 var r = listData[n];
-                listRenderSource.push(tpl.render({ tag: r.key[0], tag_encode: encodeURI(r.key[0]), value: r.value }));
+                listRenderSource.push(tplHTags.render({ tag: r.key[0], tag_encode: encodeURI(r.key[0]), value: r.value }));
             }
             $("#id_tbl_htags").html(listRenderSource.join(""));
             return this;
