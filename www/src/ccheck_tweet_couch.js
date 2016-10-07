@@ -61,9 +61,12 @@ var ccheck_tweet;
             var listResult = [];
             for (var n = 0; n < this.collection.length; n++) {
                 var r = this.collection.at(n).attributes.doc;
-                var r_date = new Date(r.created_at);
+                var r_date = new Date(Date.parse(r.created_at));
                 var tweet_text = r.text;
                 var elapsed_time = r_date_curr.getTime() - (r_date.getTime() + (24 * 3600 * 1000));
+                if (isNaN(r_date) == true) {
+                    r_date = new Date(Date(r.created_at));
+                }
                 if (r.user.id in dictUser) {
                 }
                 else {
@@ -113,10 +116,12 @@ var ccheck_tweet;
         view_CDocTable.prototype.render = function () {
             var listUserTweet = this.group_by_user();
             var listRenderSource = [];
+            var tpl = Hogan.compile($("#id_tpl_tweet_button").html());
             for (var n = 0; n < listUserTweet.length; n++) {
                 listRenderSource.push(this.template.render(listUserTweet[n]));
             }
             $("#id_current_hashtag").html("#" + ccheck_tweet.CApplication.instance.m_strCurrentHashTag);
+            $("#id_tweet_button").html(tpl.render());
             $(this.id_render_target).html(listRenderSource.join(""));
             return this;
         };

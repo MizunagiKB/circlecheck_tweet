@@ -169,9 +169,13 @@ module ccheck_tweet {
 
             for (let n: number = 0; n < this.collection.length; n++) {
                 const r: ICOUCHDB_DOCUMENT = this.collection.at(n).attributes.doc;
-                const r_date: Date = new Date(r.created_at);
+                const r_date: Date = new Date(Date.parse(r.created_at));
                 let tweet_text: string = r.text;
                 let elapsed_time: number = r_date_curr.getTime() - (r_date.getTime() + (24 * 3600 * 1000));
+
+                if (isNaN(r_date) == true) {
+                    r_date = new Date(Date(r.created_at));
+                }
 
                 if (r.user.id in dictUser) {
                 } else {
@@ -232,6 +236,7 @@ module ccheck_tweet {
         render() {
             const listUserTweet: Array<IUSERTWEET> = this.group_by_user();
             let listRenderSource: Array<string> = [];
+            let tpl = Hogan.compile($("#id_tpl_tweet_button").html());
 
             for (let n: number = 0; n < listUserTweet.length; n++) {
                 listRenderSource.push(
@@ -240,6 +245,9 @@ module ccheck_tweet {
             }
 
             $("#id_current_hashtag").html("#" + CApplication.instance.m_strCurrentHashTag);
+
+            $("#id_tweet_button").html(tpl.render());
+
             $(this.id_render_target).html(listRenderSource.join(""));
 
             return this;
