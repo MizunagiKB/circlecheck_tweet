@@ -152,6 +152,10 @@
             <li><a href="index.html?hashtag={{tag_encode}}">{{tag}}({{value}})</a></li>
         </script>
 
+        <script type="text/template" id="id_tpl_tweet_button">
+            <a href="https://twitter.com/share" class="twitter-share-button" data-dnt="true">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+        </script>
+
         <div class="container">
 
             <div id="id_notify_area">
@@ -162,6 +166,7 @@
                 </div>
             </div>
 
+            <div id="id_tweet_button"></div>
             <h5 id="id_current_hashtag">#</h5>
 
             <div id="id_view_tweet" class="cchack_view" style="display: none;">
@@ -243,7 +248,7 @@
         </script>
 
         <!-- jQuery http://jquery.com/ -->
-        <script type="text/javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.0/jquery.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.0/jquery.js"></script>
 
         <!-- Bootstrap http://twitter.github.io/bootstrap/ -->
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
