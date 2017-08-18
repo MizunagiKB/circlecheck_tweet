@@ -5,10 +5,10 @@
  */
 // -------------------------------------------------------------- reference(s)
 // ------------------------------------------------ http://definitelytyped.org
-/// <reference path="../DefinitelyTyped/jquery/jquery.d.ts"/>
-/// <reference path="../DefinitelyTyped/bootstrap/bootstrap.d.ts"/>
-/// <reference path="../DefinitelyTyped/backbone/backbone.d.ts"/>
-/// <reference path="../DefinitelyTyped/hogan/hogan.d.ts"/>
+/// <reference path="../DefinitelyTyped/jquery/index.d.ts"/>
+/// <reference path="../DefinitelyTyped/bootstrap/index.d.ts"/>
+/// <reference path="../DefinitelyTyped/backbone/index.d.ts"/>
+/// <reference path="../DefinitelyTyped/hogan/index.d.ts"/>
 /// <reference path="./ccheck_tweet.ts"/>
 
 // ---------------------------------------------------------------- declare(s)
@@ -34,7 +34,7 @@ module ccheck_tweet {
         created_at: string;
         hashtags: Array<ICOUCHDB_DOCUMENT_HASHTAG>;
         urls: Array<{ url: string, expanded_url: string }>;
-        media: Array<{ url: string }>;
+        media: Array<{ url: string, media_url: string, media_url_https: string }>;
         possibly_sensitive: boolean;
         text: string;
         user: ICOUCHDB_DOCUMENT_USER;
@@ -52,7 +52,10 @@ module ccheck_tweet {
         hashtags: Array<ICOUCHDB_DOCUMENT_HASHTAG>;
         possibly_sensitive: boolean;
         text: string;
+        media: Array<{ url: string, media_url: string, media_url_https: string }>;
         media_count: number;
+        enable_img: boolean;
+        enable_possibly_sensitive: boolean;
         new_tweet: boolean;
         with_attachments: boolean;
     }
@@ -108,6 +111,8 @@ module ccheck_tweet {
      */
     export class view_CDocTable extends Backbone.View<model_CDoc> {
         private id_render_target: string;
+        private b_enable_img: boolean;
+        private b_enable_possibly_sensitive: boolean;
         private template: Hogan.template;
 
         //
@@ -116,6 +121,8 @@ module ccheck_tweet {
 
             this.template = template;
             this.id_render_target = id_render_target;
+            this.b_enable_img = false;
+            this.b_enable_possibly_sensitive = false;
 
             this.listenTo(this.collection, "update", this.render);
         }
@@ -124,7 +131,9 @@ module ccheck_tweet {
         events(): Backbone.EventsHash {
             return {
                 "click button.show_tweet": this.evt_show_tweet,
-                "click a.show_tbl_usr": this.evt_show_tbl_usr
+                "click a.show_tbl_usr": this.evt_show_tbl_usr,
+                "click label#id_enable_img": this.evt_enable_img,
+                "click label#id_enable_possibly_sensitive": this.evt_enable_possibly_sensitive
             }
         }
 
@@ -161,6 +170,16 @@ module ccheck_tweet {
             );*/
         }
 
+        evt_enable_img(evt: any) {
+            this.b_enable_img = $("#id_enable_img").hasClass("active") == true ? false : true;
+            this.render();
+        }
+
+        evt_enable_possibly_sensitive() {
+            this.b_enable_possibly_sensitive = $("#id_enable_possibly_sensitive").hasClass("active") == true ? false : true;
+            this.render();
+        }
+
         //
         group_by_user(): Array<IUSERTWEET> {
             const r_date_curr: Date = new Date();
@@ -169,7 +188,7 @@ module ccheck_tweet {
 
             for (let n: number = 0; n < this.collection.length; n++) {
                 const r: ICOUCHDB_DOCUMENT = this.collection.at(n).attributes.doc;
-                const r_date: Date = new Date(Date.parse(r.created_at));
+                let r_date: Date = new Date(Date.parse(r.created_at));
                 let tweet_text: string = r.text;
                 let elapsed_time: number = r_date_curr.getTime() - (r_date.getTime() + (24 * 3600 * 1000));
 
@@ -212,7 +231,10 @@ module ccheck_tweet {
                             id_str: r.id_str,
                             possibly_sensitive: r.possibly_sensitive,
                             hashtags: r.hashtags,
-                            text: tweet_text, new_tweet: elapsed_time < 0, with_attachments: media_count > 0, media_count: media_count
+                            media: r.media,
+                            text: tweet_text, new_tweet: elapsed_time < 0, with_attachments: media_count > 0, media_count: media_count,
+                            enable_img: this.b_enable_img,
+                            enable_possibly_sensitive: this.b_enable_possibly_sensitive
                         }
                     );
                 } else {
@@ -222,7 +244,10 @@ module ccheck_tweet {
                             id_str: r.id_str,
                             possibly_sensitive: r.possibly_sensitive,
                             hashtags: r.hashtags,
-                            text: tweet_text, new_tweet: elapsed_time < 0, with_attachments: media_count > 0, media_count: media_count
+                            media: r.media,
+                            text: tweet_text, new_tweet: elapsed_time < 0, with_attachments: media_count > 0, media_count: media_count,
+                            enable_img: this.b_enable_img,
+                            enable_possibly_sensitive: this.b_enable_possibly_sensitive
                         }
                     );
                     o.more_tweet_count = o.tweet_list_more.length;

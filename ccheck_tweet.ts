@@ -4,10 +4,10 @@
  * @author @MizunagiKB
  */
 // -------------------------------------------------------------- reference(s)
-/// <reference path="../DefinitelyTyped/jquery/jquery.d.ts"/>
-/// <reference path="../DefinitelyTyped/bootstrap/bootstrap.d.ts"/>
-/// <reference path="../DefinitelyTyped/backbone/backbone.d.ts"/>
-/// <reference path="../DefinitelyTyped/hogan/hogan.d.ts"/>
+/// <reference path="../DefinitelyTyped/jquery/index.d.ts"/>
+/// <reference path="../DefinitelyTyped/bootstrap/index.d.ts"/>
+/// <reference path="../DefinitelyTyped/backbone/index.d.ts"/>
+/// <reference path="../DefinitelyTyped/hogan/index.d.ts"/>
 
 // ---------------------------------------------------------------- declare(s)
 // ----------------------------------------------------------------- module(s)
@@ -32,7 +32,7 @@ module ccheck_tweet {
         // -------------------------------------------------------------------
         /*!
          */
-        constructor(strHashTag: string, nLimit: number) {
+        constructor(strHashTag: string, nLimit: number, b_enable_img: boolean, b_enable_possibly_sensitive: boolean) {
             this.m_strCurrentHashTag = decodeURI(strHashTag).toLowerCase();
 
             this.m_htags_m = new model_CHTags();
@@ -111,6 +111,24 @@ module ccheck_tweet {
                     )
                 );
 
+                let tplChecks = Hogan.compile(
+                    ''
+                    + '<label id="id_enable_img" class="btn btn-primary {{#enable_img}}active{{/enable_img}}">'
+                    + '    <input id="id_input_enable_img" type="checkbox" autocomplete="off" {{#enable_img}}checked{{/enable_img}} /><span class="glyphicon glyphicon-picture"></span>&nbsp;画像を表示'
+                    + '</label>'
+                    + '<label id="id_enable_possibly_sensitive" class="btn btn-primary {{#enable_possibly_sensitive}}active{{/enable_possibly_sensitive}}">'
+                    + '    <input id="id_input_enable_possibly_sensitive" type="checkbox" autocomplete="off" {{#enable_possibly_sensitive}}checked{{/enable_possibly_sensitive}} /><span class="glyphicon glyphicon-exclamation-sign"></span>&nbsp;不適切設定も表示'
+                    + '</label>'
+                );
+                $("#id_mode_checks").html(
+                    tplChecks.render(
+                        {
+                            enable_img: b_enable_img,
+                            enable_possibly_sensitive: b_enable_possibly_sensitive
+                        }
+                    )
+                );
+
                 $("#id_view_tweet").show();
                 $("#id_menu_tweet").removeClass("disabled");
                 $("#id_menu_htags").removeClass("disabled");
@@ -143,6 +161,8 @@ module ccheck_tweet {
         const dictParam: { [key: string]: string } = get_url_param();
         let strHashTag: string = "";
         let nLimit: number = DEFAULT_ROWS_LIMIT;
+        let b_enable_img: boolean = false;
+        let b_enable_possibly_sensitive: boolean = false;
 
         if ("hashtag" in dictParam) {
             strHashTag = dictParam["hashtag"];
@@ -152,7 +172,20 @@ module ccheck_tweet {
             nLimit = parseInt(dictParam["limit"]);
         }
 
-        let o = new CApplication(strHashTag, nLimit);
+        if ("ei" in dictParam) {
+            b_enable_img = parseInt(dictParam["ei"]) == 1 ? true : false;
+        }
+
+        if ("eps" in dictParam) {
+            b_enable_possibly_sensitive = parseInt(dictParam["eps"]) == 1 ? true : false;
+        }
+
+        let o = new CApplication(
+            strHashTag,
+            nLimit,
+            b_enable_img,
+            b_enable_possibly_sensitive
+        );
 
         return o;
     }

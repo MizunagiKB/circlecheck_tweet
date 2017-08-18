@@ -5,10 +5,10 @@
  */
 // -------------------------------------------------------------- reference(s)
 // ------------------------------------------------ http://definitelytyped.org
-/// <reference path="../DefinitelyTyped/jquery/jquery.d.ts"/>
-/// <reference path="../DefinitelyTyped/bootstrap/bootstrap.d.ts"/>
-/// <reference path="../DefinitelyTyped/backbone/backbone.d.ts"/>
-/// <reference path="../DefinitelyTyped/hogan/hogan.d.ts"/>
+/// <reference path="../DefinitelyTyped/jquery/index.d.ts"/>
+/// <reference path="../DefinitelyTyped/bootstrap/index.d.ts"/>
+/// <reference path="../DefinitelyTyped/backbone/index.d.ts"/>
+/// <reference path="../DefinitelyTyped/hogan/index.d.ts"/>
 /// <reference path="./ccheck_tweet.ts"/>
 
 // ---------------------------------------------------------------- declare(s)
