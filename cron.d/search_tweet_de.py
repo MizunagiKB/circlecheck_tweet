@@ -24,12 +24,20 @@ def delete_expire_doc(db_circlecheck_tweet, o_date_expire):
         descending=False,
         include_docs=True,
         startkey=[""],
+#        endkey=["2017-03-26T00:00:00+00:00"],
         endkey=[o_date_expire.strftime("%Y-%m-%dT%H:%M:%S+00:00")]
     )
+
+#    print o_date_expire, list_expire
+
+#    for record in list_expire:
+#        print record
+#        break
 
     try:
         for record in list_expire:
             db_circlecheck_tweet.delete(record.doc)
+            print record.key
     except couchdb.http.ResourceNotFound:
         pass
 
@@ -75,19 +83,6 @@ def main():
     """プログラムエントリー
     """
 
-    opt_parse = optparse.OptionParser()
-    opt_parse.add_option(
-        "-t", "--text",
-        help="Search text",
-        dest="q"
-    )
-
-    options, _ = opt_parse.parse_args()
-
-    if options.q is None:
-        opt_parse.print_help()
-        return 1
-
     # CouchDB
     conn_couch = couchdb.Server(
         "http://" + configure.COUCH_USER + ":" + configure.COUCH_PASS + "@" + configure.COUCH_HOST
@@ -95,59 +90,15 @@ def main():
     db_circlecheck_tweet = conn_couch["circlecheck_tweet"]
 
     o_date_expire = datetime.datetime.utcnow() - datetime.timedelta(days=configure.EXPIRE_DAYS)
+    
+    o_date = datetime.datetime(2017, 3, 26)
 
-    delete_expire_doc(db_circlecheck_tweet, o_date_expire)
+    while o_date < o_date_expire:
+        delete_expire_doc(db_circlecheck_tweet, o_date)
+        o_date += datetime.timedelta(days=1)
+        print o_date
+            
 
-    # Twitter
-    o_twitter = twitter.Api(
-        configure.CONSUMER_KEY,
-        configure.CONSUMER_SECRET,
-        configure.ACCESS_TOKEN,
-        configure.ACCESS_TOKEN_SECRET,
-        sleep_on_rate_limit=True
-    )
-    o_twitter.InitializeRateLimit()
-
-    b_testmode = False
-    max_id = 0
-    read_count = 0
-    while True:
-        save_count = 0
-        for item in twitter_search_generator(o_twitter, options.q + " exclude:retweets", 100, max_id, b_testmode):
-            dict_record = item.AsDict()
-
-            # tweet_idを_idとして使用
-            id_str = dict_record["id_str"]
-
-            dict_record["_id"] = id_str
-
-            # 日付をISO表記に変更
-            created_at = dict_record["created_at"]
-
-            o_date = dateutil.parser.parse(created_at)
-
-            dict_record["ccheck_created"] = o_date.strftime("%Y-%m-%dT%H:%M:%S+00:00")
-
-            utime_date = time.mktime(o_date.timetuple())
-            utime_curr = time.mktime(o_date_expire.timetuple())
-
-            if utime_date > utime_curr:
-                try:
-                    db_circlecheck_tweet.save(dict_record)
-                    save_count += 1
-                except couchdb.http.ResourceConflict:
-                    #print "except couchdb.http.ResourceConflict", id_str
-                    pass
-
-            read_count += 1
-            max_id = item.id - 1
-
-        if save_count == 0 or read_count > 256:
-            break
-        else:
-            print max_id, read_count
-            print "------------------------------------------------------------------------ sleep"
-            time.sleep(5)
 
 
 if __name__ == "__main__":

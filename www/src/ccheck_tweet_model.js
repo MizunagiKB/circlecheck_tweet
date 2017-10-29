@@ -2,17 +2,22 @@
  * @brief CircleCheck
  * @author @MizunagiKB
  */
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var ccheck_tweet;
 (function (ccheck_tweet) {
     var model_CHTags = (function (_super) {
         __extends(model_CHTags, _super);
         function model_CHTags(attributes, options) {
-            _super.call(this, attributes, options);
+            return _super.call(this, attributes, options) || this;
         }
         return model_CHTags;
     }(Backbone.Model));
@@ -20,7 +25,7 @@ var ccheck_tweet;
     var model_CTimeline = (function (_super) {
         __extends(model_CTimeline, _super);
         function model_CTimeline(attributes, options) {
-            _super.call(this, attributes, options);
+            return _super.call(this, attributes, options) || this;
         }
         return model_CTimeline;
     }(Backbone.Model));
@@ -39,8 +44,9 @@ var ccheck_tweet;
     var view_CHTags = (function (_super) {
         __extends(view_CHTags, _super);
         function view_CHTags(options) {
-            _super.call(this, options);
-            this.listenTo(this.model, "change", this.render);
+            var _this = _super.call(this, options) || this;
+            _this.listenTo(_this.model, "change", _this.render);
+            return _this;
         }
         view_CHTags.prototype.events = function () {
             return {};

@@ -7,7 +7,7 @@ var ccheck_tweet;
     ccheck_tweet.WEBAPI_BASE = "/db";
     var DEFAULT_ROWS_LIMIT = 250;
     var CApplication = (function () {
-        function CApplication(strHashTag, nLimit) {
+        function CApplication(strHashTag, nLimit, b_enable_img, b_enable_possibly_sensitive) {
             this.m_htags_m = null;
             this.m_htags_v = null;
             this.m_view_Tag = null;
@@ -62,15 +62,26 @@ var ccheck_tweet;
                     limit_500: (nLimit == 500) ? true : false,
                     limit_750: (nLimit == 750) ? true : false
                 }));
+                var tplChecks = Hogan.compile(''
+                    + '<label id="id_enable_img" class="btn btn-primary {{#enable_img}}active{{/enable_img}}">'
+                    + '    <input id="id_input_enable_img" type="checkbox" autocomplete="off" {{#enable_img}}checked{{/enable_img}} /><span class="glyphicon glyphicon-picture"></span>&nbsp;画像を表示'
+                    + '</label>'
+                    + '<label id="id_enable_possibly_sensitive" class="btn btn-primary {{#enable_possibly_sensitive}}active{{/enable_possibly_sensitive}}">'
+                    + '    <input id="id_input_enable_possibly_sensitive" type="checkbox" autocomplete="off" {{#enable_possibly_sensitive}}checked{{/enable_possibly_sensitive}} /><span class="glyphicon glyphicon-exclamation-sign"></span>&nbsp;不適切設定も表示'
+                    + '</label>');
+                $("#id_mode_checks").html(tplChecks.render({
+                    enable_img: b_enable_img,
+                    enable_possibly_sensitive: b_enable_possibly_sensitive
+                }));
                 $("#id_view_tweet").show();
                 $("#id_menu_tweet").removeClass("disabled");
                 $("#id_menu_htags").removeClass("disabled");
             }
             CApplication.instance = this;
         }
-        CApplication.instance = null;
         return CApplication;
     }());
+    CApplication.instance = null;
     ccheck_tweet.CApplication = CApplication;
     function get_url_param() {
         var listResult = {};
@@ -85,13 +96,21 @@ var ccheck_tweet;
         var dictParam = get_url_param();
         var strHashTag = "";
         var nLimit = DEFAULT_ROWS_LIMIT;
+        var b_enable_img = false;
+        var b_enable_possibly_sensitive = false;
         if ("hashtag" in dictParam) {
             strHashTag = dictParam["hashtag"];
         }
         if ("limit" in dictParam) {
             nLimit = parseInt(dictParam["limit"]);
         }
-        var o = new CApplication(strHashTag, nLimit);
+        if ("ei" in dictParam) {
+            b_enable_img = parseInt(dictParam["ei"]) == 1 ? true : false;
+        }
+        if ("eps" in dictParam) {
+            b_enable_possibly_sensitive = parseInt(dictParam["eps"]) == 1 ? true : false;
+        }
+        var o = new CApplication(strHashTag, nLimit, b_enable_img, b_enable_possibly_sensitive);
         return o;
     }
     ccheck_tweet.main = main;

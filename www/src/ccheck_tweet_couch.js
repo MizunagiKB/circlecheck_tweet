@@ -2,17 +2,22 @@
  * @brief CircleCheck
  * @author @MizunagiKB
  */
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var ccheck_tweet;
 (function (ccheck_tweet) {
     var model_CDoc = (function (_super) {
         __extends(model_CDoc, _super);
         function model_CDoc(attributes, options) {
-            _super.call(this, attributes, options);
+            return _super.call(this, attributes, options) || this;
         }
         return model_CDoc;
     }(Backbone.Model));
@@ -20,7 +25,7 @@ var ccheck_tweet;
     var collection_CDoc = (function (_super) {
         __extends(collection_CDoc, _super);
         function collection_CDoc(attributes, options) {
-            _super.call(this, attributes, options);
+            return _super.call(this, attributes, options) || this;
         }
         collection_CDoc.prototype.modelId = function (attributes) {
             return attributes._id;
@@ -34,15 +39,20 @@ var ccheck_tweet;
     var view_CDocTable = (function (_super) {
         __extends(view_CDocTable, _super);
         function view_CDocTable(options, template, id_render_target) {
-            _super.call(this, options);
-            this.template = template;
-            this.id_render_target = id_render_target;
-            this.listenTo(this.collection, "update", this.render);
+            var _this = _super.call(this, options) || this;
+            _this.template = template;
+            _this.id_render_target = id_render_target;
+            _this.b_enable_img = false;
+            _this.b_enable_possibly_sensitive = false;
+            _this.listenTo(_this.collection, "update", _this.render);
+            return _this;
         }
         view_CDocTable.prototype.events = function () {
             return {
                 "click button.show_tweet": this.evt_show_tweet,
-                "click a.show_tbl_usr": this.evt_show_tbl_usr
+                "click a.show_tbl_usr": this.evt_show_tbl_usr,
+                "click label#id_enable_img": this.evt_enable_img,
+                "click label#id_enable_possibly_sensitive": this.evt_enable_possibly_sensitive
             };
         };
         view_CDocTable.prototype.evt_show_tweet = function (evt) {
@@ -54,6 +64,14 @@ var ccheck_tweet;
             }));
         };
         view_CDocTable.prototype.evt_show_tbl_usr = function (evt) {
+        };
+        view_CDocTable.prototype.evt_enable_img = function (evt) {
+            this.b_enable_img = $("#id_enable_img").hasClass("active") == true ? false : true;
+            this.render();
+        };
+        view_CDocTable.prototype.evt_enable_possibly_sensitive = function () {
+            this.b_enable_possibly_sensitive = $("#id_enable_possibly_sensitive").hasClass("active") == true ? false : true;
+            this.render();
         };
         view_CDocTable.prototype.group_by_user = function () {
             var r_date_curr = new Date();
@@ -97,7 +115,10 @@ var ccheck_tweet;
                         id_str: r.id_str,
                         possibly_sensitive: r.possibly_sensitive,
                         hashtags: r.hashtags,
-                        text: tweet_text, new_tweet: elapsed_time < 0, with_attachments: media_count > 0, media_count: media_count
+                        media: r.media,
+                        text: tweet_text, new_tweet: elapsed_time < 0, with_attachments: media_count > 0, media_count: media_count,
+                        enable_img: this.b_enable_img,
+                        enable_possibly_sensitive: this.b_enable_possibly_sensitive
                     });
                 }
                 else {
@@ -106,7 +127,10 @@ var ccheck_tweet;
                         id_str: r.id_str,
                         possibly_sensitive: r.possibly_sensitive,
                         hashtags: r.hashtags,
-                        text: tweet_text, new_tweet: elapsed_time < 0, with_attachments: media_count > 0, media_count: media_count
+                        media: r.media,
+                        text: tweet_text, new_tweet: elapsed_time < 0, with_attachments: media_count > 0, media_count: media_count,
+                        enable_img: this.b_enable_img,
+                        enable_possibly_sensitive: this.b_enable_possibly_sensitive
                     });
                     o.more_tweet_count = o.tweet_list_more.length;
                 }
