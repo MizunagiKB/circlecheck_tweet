@@ -99,7 +99,7 @@ def build_layout_map(conn_couch, doc_id):
 
     db_circlecheck_tweet = conn_couch["circlecheck"]
     doc = db_circlecheck_tweet[doc_id]
-    tag = doc["hashtag"]
+    tag = doc["EVENT_HASHTAG"]
 
     dict_layout_map = {}
 
