@@ -11,19 +11,6 @@ def main():
     """
     """
 
-    opt_parse = optparse.OptionParser()
-    opt_parse.add_option(
-        "-i", "--doc-id",
-        help="Event Document",
-        dest="DOC_ID"
-    )
-
-    options, _ = opt_parse.parse_args()
-
-#    if options.DOC_ID is None:
-#        opt_parse.print_help()
-#        return 1
-
     # CouchDB
     conn_couch = couchdb.Server(
         "http://" + configure.COUCH_USER + ":" + configure.COUCH_PASS + "@" + configure.COUCH_HOST

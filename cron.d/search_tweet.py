@@ -81,22 +81,18 @@ def main():
         help="Search text",
         dest="q"
     )
+    opt_parse.add_option(
+        "-l", "--limit",
+        action="store_true",
+        help="Show Twitter API Limit",
+        dest="l"
+    )
 
     options, _ = opt_parse.parse_args()
 
     if options.q is None:
         opt_parse.print_help()
         return 1
-
-    # CouchDB
-    conn_couch = couchdb.Server(
-        "http://" + configure.COUCH_USER + ":" + configure.COUCH_PASS + "@" + configure.COUCH_HOST
-    )
-    db_circlecheck_tweet = conn_couch["circlecheck_tweet"]
-
-    o_date_expire = datetime.datetime.utcnow() - datetime.timedelta(days=configure.EXPIRE_DAYS)
-
-    delete_expire_doc(db_circlecheck_tweet, o_date_expire)
 
     # Twitter
     o_twitter = twitter.Api(
@@ -107,6 +103,20 @@ def main():
         sleep_on_rate_limit=True
     )
     o_twitter.InitializeRateLimit()
+
+    if options.l is True:
+        print o_twitter.rate_limit.resources["search"]
+        return
+
+    # CouchDB
+    conn_couch = couchdb.Server(
+        "http://" + configure.COUCH_USER + ":" + configure.COUCH_PASS + "@" + configure.COUCH_HOST
+    )
+    db_circlecheck_tweet = conn_couch["circlecheck_tweet"]
+
+    o_date_expire = datetime.datetime.utcnow() - datetime.timedelta(days=configure.EXPIRE_DAYS)
+
+    delete_expire_doc(db_circlecheck_tweet, o_date_expire)
 
     b_testmode = False
     max_id = 0
