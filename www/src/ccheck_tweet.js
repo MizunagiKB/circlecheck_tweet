@@ -79,9 +79,9 @@ var ccheck_tweet;
             }
             CApplication.instance = this;
         }
+        CApplication.instance = null;
         return CApplication;
     }());
-    CApplication.instance = null;
     ccheck_tweet.CApplication = CApplication;
     function get_url_param() {
         var listResult = {};

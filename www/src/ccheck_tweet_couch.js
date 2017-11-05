@@ -80,7 +80,12 @@ var ccheck_tweet;
             for (var n = 0; n < this.collection.length; n++) {
                 var r = this.collection.at(n).attributes.doc;
                 var r_date = new Date(Date.parse(r.created_at));
-                var tweet_text = r.text;
+                if (r.full_text == undefined) {
+                    var tweet_text = r.text;
+                }
+                else {
+                    var tweet_text = r.full_text;
+                }
                 var elapsed_time = r_date_curr.getTime() - (r_date.getTime() + (24 * 3600 * 1000));
                 if (isNaN(r_date) == true) {
                     r_date = new Date(Date(r.created_at));

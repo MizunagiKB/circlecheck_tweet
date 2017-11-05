@@ -55,7 +55,10 @@ def insert_record(conn_couch, dict_layout_map, DATA_SOURCE, doc):
     layout = dict_layout_map[screen_name]
 
     cedit_category = hashtag_to_category(doc["hashtags"])
-    tweet_text = xml.sax.saxutils.unescape(doc["text"])
+    if "full_text" in doc:
+        tweet_text = xml.sax.saxutils.unescape(doc["full_text"])
+    else:
+        tweet_text = xml.sax.saxutils.unescape(doc["text"])
     if len(tweet_text) > MAXIMUM_TEXT_LENGTH:
         tweet_text = tweet_text[0:MAXIMUM_TEXT_LENGTH] + " ..."
 

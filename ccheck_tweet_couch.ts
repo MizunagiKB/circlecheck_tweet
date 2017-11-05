@@ -36,7 +36,8 @@ module ccheck_tweet {
         urls: Array<{ url: string, expanded_url: string }>;
         media: Array<{ url: string, media_url: string, media_url_https: string }>;
         possibly_sensitive: boolean;
-        text: string;
+        text?: string;
+        full_text?: string;
         user: ICOUCHDB_DOCUMENT_USER;
     }
 
@@ -189,7 +190,12 @@ module ccheck_tweet {
             for (let n: number = 0; n < this.collection.length; n++) {
                 const r: ICOUCHDB_DOCUMENT = this.collection.at(n).attributes.doc;
                 let r_date: Date = new Date(Date.parse(r.created_at));
-                let tweet_text: string = r.text;
+
+                if (r.full_text == undefined) {
+                    let tweet_text: string = r.text;
+                } else {
+                    let tweet_text: string = r.full_text;
+                }
                 let elapsed_time: number = r_date_curr.getTime() - (r_date.getTime() + (24 * 3600 * 1000));
 
                 if (isNaN(r_date) == true) {

@@ -100,7 +100,8 @@ def main():
         configure.CONSUMER_SECRET,
         configure.ACCESS_TOKEN,
         configure.ACCESS_TOKEN_SECRET,
-        sleep_on_rate_limit=True
+        sleep_on_rate_limit=True,
+        tweet_mode="extended"
     )
     o_twitter.InitializeRateLimit()
 
@@ -146,7 +147,7 @@ def main():
                     db_circlecheck_tweet.save(dict_record)
                     save_count += 1
                 except couchdb.http.ResourceConflict:
-                    #print "except couchdb.http.ResourceConflict", id_str
+                    print "except couchdb.http.ResourceConflict", id_str
                     pass
 
             read_count += 1
